@@ -18,8 +18,7 @@ if host_system == 'windows'
     explicit_libs += 'libmsvcrt;libgcc;libmingwex;libgmp;'
 endif
 if build_static == true
-    explicit_libs += 'libfreetype;libbz2;libharfbuzz;libgraphite2;'
-    explicit_libs += 'libjpeg;libpng;libtiff;libwebp;liblzma;libzstd;'
+    explicit_libs += ''
     global_link_args += '-static'
 endif
 

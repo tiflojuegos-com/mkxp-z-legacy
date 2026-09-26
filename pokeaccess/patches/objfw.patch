@@ -1,0 +1,22 @@
+diff --git a/configure.ac b/configure.ac
+index 40f6ed1..eb80842 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1196,7 +1196,7 @@ AS_IF([test x"$enable_files" != x"no"], [
+ 	])
+ 
+ 	old_OBJCFLAGS="$OBJCFLAGS"
+-	OBJCFLAGS="$OBJCFLAGS -Werror"
++	OBJCFLAGS="$OBJCFLAGS"
+ 	AC_MSG_CHECKING(for readdir_r)
+ 	AC_TRY_COMPILE([
+ 		#include <dirent.h>
+@@ -1612,7 +1612,7 @@ AC_TRY_COMPILE([], [
+ ])
+ 
+ AS_IF([test x"$GOBJC" = x"yes"], [
+-	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
++	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith"
+ 
+ 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
+ 	AC_TRY_COMPILE([

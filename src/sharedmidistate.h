@@ -84,6 +84,8 @@ struct SharedMidiState
 		fluid.settings_setnum(flSettings, "synth.sample-rate", SYNTH_SAMPLERATE);
 		fluid.settings_setstr(flSettings, "synth.chorus.active", conf.midi.chorus ? "yes" : "no");
 		fluid.settings_setstr(flSettings, "synth.reverb.active", conf.midi.reverb ? "yes" : "no");
+		fluid.settings_setint(flSettings, "synth.chorus.active", conf.midi.chorus ? 1 : 0);
+		fluid.settings_setint(flSettings, "synth.reverb.active", conf.midi.reverb ? 1 : 0);
 
 		for (size_t i = 0; i < SYNTH_INIT_COUNT; ++i)
 			addSynth(false);
