@@ -2,7 +2,7 @@
 # Builds the 32-bit mkxp-z 1.3.0 engine used by PokeAccess (static exe, Ruby 1.8.7, MiniFFI, easypoke)
 # and a self-contained fluidsynth.dll. mkxp-z is this checkout; every other dependency comes from its
 # source tarball in $DL, with its patch from pokeaccess/patches. Run from an MSYS2 MINGW32 shell:
-#   pokeaccess/build.sh deps      installs the MSYS2 packages (once)
+#   pokeaccess/build.sh deps      installs the MSYS2 packages and the archived 32-bit libraries (once)
 #   pokeaccess/fetch.sh           downloads and verifies the dependency tarballs into $DL
 #   pokeaccess/build.sh           builds every step not yet done; results land in $WORK/out
 # WORK (default pokeaccess/work) holds src/, bld/, pfx/ and out/; DL defaults to pokeaccess/dl.
@@ -30,10 +30,25 @@ AT="--build=i686-w64-mingw32 --host=i686-w64-mingw32 --prefix=$PFX"
 CM="-G Ninja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PFX -DCMAKE_PREFIX_PATH=$PFX -DBUILD_SHARED_LIBS=OFF"
 MS="--prefix=$PFX --buildtype=release -Ddefault_library=static"
 
+# The 32-bit libraries MSYS2's mingw32 repo no longer carries, at the versions the engine was built with, taken from
+# its package archive with their signatures. SDL2 asks for the dropped Vulkan loader, which its static library does
+# not link.
+MSYS2_ARCHIVE=https://repo.msys2.org/mingw/mingw32
+ARCHIVED="SDL2-2.32.10-1 libogg-1.3.6-1 libvorbis-1.3.7-3 flac-1.5.0-2 opus-1.6.1-1 mpg123-1.33.7-1 lame-3.100-3 libsndfile-1.2.2-1"
+
 deps() {
+  local p f pkgs=$DL/msys2 files=""
   pacman -S --needed --noconfirm \
-    mingw-w64-i686-{gcc,binutils,meson,ninja,pkgconf,cmake,SDL2,libvorbis,libogg,zlib,libiconv,gmp,libsndfile} \
+    mingw-w64-i686-{gcc,binutils,meson,ninja,pkgconf,cmake,zlib,libiconv,gmp} \
     mingw-w64-x86_64-clang make autoconf automake libtool bison patch diffutils vim
+  mkdir -p "$pkgs"
+  for p in $ARCHIVED; do
+    f=mingw-w64-i686-$p-any.pkg.tar.zst
+    [ -s "$pkgs/$f" ] || curl -fL --retry 5 -o "$pkgs/$f" "$MSYS2_ARCHIVE/$f"
+    [ -s "$pkgs/$f.sig" ] || curl -fL --retry 5 -o "$pkgs/$f.sig" "$MSYS2_ARCHIVE/$f.sig"
+    files="$files $pkgs/$f"
+  done
+  pacman -U --needed --noconfirm --assume-installed mingw-w64-i686-vulkan $files
 }
 
 unpack() {
