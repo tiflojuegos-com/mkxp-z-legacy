@@ -865,7 +865,7 @@ void Graphics::screenshot(const char *filename) {
 #ifdef __WIN32__
   SDL_Surface *img = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, 0, 0, 0, 0);
   if (!img)
-    throw new Exception(Exception::SDLError, "%s", SDL_GetError());
+    throw Exception(Exception::SDLError, "%s", SDL_GetError());
 
   glReadPixels(p->scOffset.x, p->scOffset.y, w, h, GL_BGRA, GL_UNSIGNED_BYTE,
                img->pixels);
@@ -897,7 +897,7 @@ void Graphics::screenshot(const char *filename) {
   SDL_FreeSurface(img);
   delete fn_normalized;
   if (rc)
-    throw new Exception(Exception::SDLError, "%s", SDL_GetError());
+    throw Exception(Exception::SDLError, "%s", SDL_GetError());
 }
 
 DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)
