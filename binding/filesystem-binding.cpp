@@ -161,6 +161,9 @@ RB_METHOD(kernelLoadData) {
   VALUE raw;
   rb_scan_args(argc, argv, "11", &filename, &raw);
   SafeStringValue(filename);
+  // RGSS takes Windows separators here; PhysFS only takes '/'
+  filename = rb_funcall(filename, rb_intern("tr"), 2, rb_str_new2("\\"),
+                        rb_str_new2("/"));
 
   // There's gotta be an easier way to do this
   if (raw != Qnil && raw != Qtrue && raw != Qfalse) {
