@@ -188,6 +188,21 @@ static void setupScreenSize(Config &conf) {
     conf.defScreenH = (conf.rgssVersion == 1 ? 480 : 416);
 }
 
+// The game's INI, read as UTF-8, else in the Windows codepage the original
+// RGSS player reads it in.
+static OFINIFile *openGameINI(OFString *path) {
+  @try {
+    return [OFINIFile fileWithPath:path encoding:OF_STRING_ENCODING_UTF_8];
+  } @catch (OFInvalidEncodingException *exc) {
+  }
+  @try {
+    return [OFINIFile fileWithPath:path
+                          encoding:OF_STRING_ENCODING_WINDOWS_1252];
+  } @catch (OFInvalidEncodingException *exc) {
+  }
+  return [OFINIFile fileWithPath:path encoding:OF_STRING_ENCODING_ISO_8859_1];
+}
+
 void Config::readGameINI() {
   if (!customScript.empty()) {
 
@@ -204,7 +219,7 @@ void Config::readGameINI() {
       [OFString stringWithFormat:@"%s.ini", execName.c_str()];
   if ([OFFileManager.defaultManager fileExistsAtPath:iniFilename]) {
     @try {
-      OFINIFile *iniFile = [OFINIFile fileWithPath:iniFilename];
+      OFINIFile *iniFile = openGameINI(iniFilename);
       OFINICategory *iniCat = [iniFile categoryForName:@"Game"];
       GUARD(game.title =
                 [iniCat stringForKey:@"Title" defaultValue:@""].UTF8String;)
