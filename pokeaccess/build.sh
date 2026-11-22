@@ -37,15 +37,16 @@ MSYS2_ARCHIVE=https://repo.msys2.org/mingw/mingw32
 ARCHIVED="SDL2-2.32.10-1 libogg-1.3.6-1 libvorbis-1.3.7-3 flac-1.5.0-2 opus-1.6.1-1 mpg123-1.33.7-1 lame-3.100-3 libsndfile-1.2.2-1"
 
 deps() {
-  local p f pkgs=$DL/msys2 files=""
+  local p f x pkgs=$DL/msys2 files=""
   pacman -S --needed --noconfirm \
     mingw-w64-i686-{gcc,binutils,meson,ninja,pkgconf,cmake,zlib,libiconv,gmp} \
     mingw-w64-x86_64-clang make autoconf automake libtool bison patch diffutils vim
   mkdir -p "$pkgs"
   for p in $ARCHIVED; do
     f=mingw-w64-i686-$p-any.pkg.tar.zst
-    [ -s "$pkgs/$f" ] || curl -fL --retry 5 -o "$pkgs/$f" "$MSYS2_ARCHIVE/$f"
-    [ -s "$pkgs/$f.sig" ] || curl -fL --retry 5 -o "$pkgs/$f.sig" "$MSYS2_ARCHIVE/$f.sig"
+    for x in "$f" "$f.sig"; do
+      [ -s "$pkgs/$x" ] || { curl -fL --retry 5 -o "$pkgs/$x.part" "$MSYS2_ARCHIVE/$x" && mv "$pkgs/$x.part" "$pkgs/$x"; }
+    done
     files="$files $pkgs/$f"
   done
   pacman -U --needed --noconfirm --assume-installed mingw-w64-i686-vulkan $files
