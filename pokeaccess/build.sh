@@ -148,8 +148,9 @@ b_ruby() {
 }
 
 b_mkxpz() {
-  local c="'$CLANG_BIN/clang.exe', '--target=i686-w64-mingw32', '--sysroot=$SYSROOT'"
-  local cxx="'$CLANG_BIN/clang++.exe', '--target=i686-w64-mingw32', '--sysroot=$SYSROOT'"
+  local map="'-fmacro-prefix-map=$(cygpath -m /)=/msys2'"
+  local c="'$CLANG_BIN/clang.exe', '--target=i686-w64-mingw32', '--sysroot=$SYSROOT', $map"
+  local cxx="'$CLANG_BIN/clang++.exe', '--target=i686-w64-mingw32', '--sysroot=$SYSROOT', $map"
   mkdir -p "$REPO/boost-unordered"
   if [ -z "$(ls -A "$REPO/boost-unordered")" ]; then
     tar -xf "$DL/boost-unordered-87337739.tar.gz" -C "$REPO/boost-unordered" --strip-components=1
